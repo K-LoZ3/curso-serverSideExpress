@@ -38,10 +38,27 @@ if (env === "development") {
 // Hacemos una peticion get en la que se incluyen todas la rutas.
 // ya sea '/' o '/otra-ruta'
 app.get("*", (req, res) => {
-  // Respondemos con un json.
-  res.send({
-    hello: "express",
-  });
+  // Para servir el frontend desde el servidor necesitamos que este lo de 
+  // como respuesta en una peticion GET.
+  // Respondemos con el html que usamos como template para el frontdend.
+  // De esta manera podemos enlazar el css y el js que genera el webpack
+  // para el frontend y que la app se lanse desde el servidor.
+  res.send(`
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="assets/app.css" type="text/css">
+      <title>P Video</title>
+    </head>
+    <body>
+      <div id="app"></div>
+      <script src="assets/app.js" type="text/javascript"></script>
+    </body>
+  </html>
+  `);
 });
 
 // Lansamos la app de expres en el puerto que defnimos en

@@ -27,3 +27,8 @@ entry: ['./src/frontend/index.js', 'webpack-hot-middleware/client?path=/__webpac
    ~~~json
    "plugins": ["react-hot-loader/babel"]
    ~~~
+#### Servir react con express.
+Las configuraciones son:
+1. Como el servidor se encargara de responder con el html ya no necesitamos el plugin de html en el webpack.config.js asi que lo eliminamos.
+2. Cambiamos el nombre que resulta del css en el plugin del webpack para que este sea el mismo y poder usarlo en el servidor. Lo mismo con el output del js en webpack.config.js quedando asi.
+~filename: 'assets/app.css',~ y ~filename: 'assets/app.js',~
