@@ -32,3 +32,6 @@ Las configuraciones son:
 1. Como el servidor se encargara de responder con el html ya no necesitamos el plugin de html en el webpack.config.js asi que lo eliminamos.
 2. Cambiamos el nombre que resulta del css en el plugin del webpack para que este sea el mismo y poder usarlo en el servidor. Lo mismo con el output del js en webpack.config.js quedando asi.
 ~filename: 'assets/app.css',~ y ~filename: 'assets/app.js',~
+#### Agregamos rutas para el manejo del frontend.
+- Para el manejo de rutas instalamos 2 dependencias. ~npm i history react-router-config~
+El primero es para tener un historial de las rutas y el segundo es para añadir una capa de configuracion a las rutas.
