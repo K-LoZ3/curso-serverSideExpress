@@ -10,5 +10,12 @@ require('@babel/register')({
   ],
 });
 
+// Con esto le decimos al servidor de donde estan las imagenes y como se llaman.
+// Para esto necesitamos el file-loader este en la version 5.1.0 ya que la version 6 no funciona.
+require('asset-require-hook')({
+  extensions: ['jpg', 'png', 'gif'],
+  name: '/assets/[hash].[ext]',
+});
+
 // Importamos el archivo server dentro de index.
 require('./server');

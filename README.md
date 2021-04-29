@@ -35,3 +35,5 @@ Las configuraciones son:
 #### Agregamos rutas para el manejo del frontend.
 - Para el manejo de rutas instalamos 2 dependencias. ~npm i history react-router-config~
 El primero es para tener un historial de las rutas y el segundo es para añadir una capa de configuracion a las rutas.
+#### Cargar imagenes.
+Intalamos ~~~npm install asset-require-hook~~~
