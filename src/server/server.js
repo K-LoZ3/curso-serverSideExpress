@@ -49,7 +49,7 @@ if (env === "development") {
 
 // Con esta funcion incrustamos el html renderizado de react como un string y lo incrustamos en
 // el template del html que se mostrara al final en el navegador.
-const setResponse = (html) => (`
+const setResponse = (html, preloadedState) => (`
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -92,7 +92,7 @@ const renderApp = (req, res) =>{
   );
   
   // Enviamos el html al navegador. Tambien enviamos el precargado del store.
-  res.send(setResponse(html), preloadedState);
+  res.send(setResponse(html, preloadedState));
 };
 
 // Hacemos una peticion get en la que se incluyen todas la rutas.

@@ -13,10 +13,11 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_D
 // Usamos el preloadedState para no crear un store distinto.
 const store = createStore(reducer, preloadedState, composeEnhancers);
 
+delete window.__PRELOADED_STATE__;
 // Esto porque el estado queda en el navegador. Si el usuario entra en la consola del navegador
 // puede acceder a esta variable window.__PRELOADED_STATE__ y ver todo el stado de la app.
 // Debemos borrarla despues de usarla para que esto no sea un problema.
-delete preloadedState;
+
 
 // Cambiamos render por hydrate ya que no queremos que se renderice el react otra vez.
 // Para resumir toda la configuracion en README.md
