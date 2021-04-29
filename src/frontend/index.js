@@ -6,13 +6,21 @@ import { Router } from 'react-router-dom'; // Agregamos para poder incluir el hi
 import { createBrowserHistory } from 'history'; // Importamos para crear el historial dentro del frontend.
 import reducer from './reducers';
 import App from './routes/App';
-import initialState from './initialState'; // Cambiamos en estado inicial de redux para un archivo aparte.
 
 const history = createBrowserHistory(); // Creamos el historial.
+const preloadedState = window.__PRELOADED_STATE__; // Con esto accedemos al preload que se encrusto en el html del servidor.
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
-const store = createStore(reducer, initialState, composeEnhancers);
+// Usamos el preloadedState para no crear un store distinto.
+const store = createStore(reducer, preloadedState, composeEnhancers);
 
-ReactDOM.render(
+// Esto porque el estado queda en el navegador. Si el usuario entra en la consola del navegador
+// puede acceder a esta variable window.__PRELOADED_STATE__ y ver todo el stado de la app.
+// Debemos borrarla despues de usarla para que esto no sea un problema.
+delete preloadedState;
+
+// Cambiamos render por hydrate ya que no queremos que se renderice el react otra vez.
+// Para resumir toda la configuracion en README.md
+ReactDOM.hydrate(
   <Provider store={store}>
     <Router history={history}>
       <App />

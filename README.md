@@ -37,3 +37,5 @@ Las configuraciones son:
 El primero es para tener un historial de las rutas y el segundo es para añadir una capa de configuracion a las rutas.
 #### Cargar imagenes.
 Intalamos ~~~npm install asset-require-hook~~~
+#### Hydrate
+Con hydrate en vez de render lo que hacemos es que no renderice 2 veces, ya que la app la estamos renderizando en el servidor y estamos creando el store y el html en el servidor. Esto para mandar el html y el css al cliente antes de que frontend este listo. En este sentido lo que hacemos es cargar todo lo necesario en el servidor y mandarlo al navegador cuando el cliente ya tenga lo demas no necesitara re-renderizar solo tendra que hacer un hydrate para que agregue lo que falta, como lo es el js.

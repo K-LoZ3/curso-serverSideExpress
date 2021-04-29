@@ -61,10 +61,14 @@ const setResponse = (html) => (`
     </head>
     <body>
       <div id="app">${html}</div>
+      <script>
+        window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}
+      </script>
       <script src="assets/app.js" type="text/javascript"></script>
     </body>
   </html>
 `);
+// El script es para poder pasar el preloadState para que el frontend pueda acceder y usarlo.
 
 // Con esta funcion convertimos todos los componentes de react en el frontend como un string
 // De esta manera los podemos pasar a un html y enviarlo como un string por una peticion GET
@@ -73,6 +77,9 @@ const renderApp = (req, res) =>{
   // pero no vamos a usar react-devtool del lado del servidor asi que solo pasamos los 2 promeros argumentos.
   // Esto es porque nocesitamos que el html quede igual como quedaria con el frontend normal.
   const store = createStore(reducer, initialState);
+  // Con esto lo que hacemos es crear una copia o un estado ya cargado del store para poder pasarlo al frontend
+  // y que use este mismo y no cree uno nuevo.
+  const preloadedState = store.getState();
   // Renderizamos el html que vamos a usar.
   // Provider para el store, staticRouter para el manejo de las rutas y renderRoutes para que renderice
   // el objeto de rutas del servidor para que sepa cuales y como usarlas.
@@ -84,8 +91,8 @@ const renderApp = (req, res) =>{
     </Provider>,
   );
   
-  // Enviamos el html al navegador.
-  res.send(setResponse(html));
+  // Enviamos el html al navegador. Tambien enviamos el precargado del store.
+  res.send(setResponse(html), preloadedState);
 };
 
 // Hacemos una peticion get en la que se incluyen todas la rutas.
