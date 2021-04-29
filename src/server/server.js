@@ -6,6 +6,18 @@ import config from "./config";
 // Importamos webpack para configurar los 2 middleware de webpack.
 import webpack from 'webpack';
 
+import React from 'react'; // Importamos para poder usar jsx.
+import { renderToString } from 'react-dom/server'; // Importamos para tranzformar jsx a string y poder insertarlo en template de html.
+import { Provider } from 'react-redux'; // Importamos para poder tener el store dentro del html que vamos crear con rect.
+import { createStore } from 'redux'; // Importamos para crear el store que usa el frontend y poderlo incluir en el html que enviaremos por GET.
+// Importamos para renderizar las rutas del lado del servidor.
+// Con esto no tenemos que definir cada ruta como se hace en el archivo '../frontend/routes/App.js'.
+import { renderRoutes } from 'react-router-config';
+import { StaticRouter } from 'react-router-dom';
+import serverRoutes from '../frontend/routes/serverRoutes'; // Importamos las rutas para renderizarlas del lado del servidor.
+import reducer from '../frontend/reducers'; // Importamos para crear bien el store.
+import initialState from '../frontend/initialState'; // Importamos para crear bien el store.
+
 // Extraemos solo las variables de entorno que vamos a usar.
 const { env, port } = config;
 // Creamos la app de express para los llamados GET y demas.
@@ -35,15 +47,9 @@ if (env === "development") {
   app.use(webpackHotMiddleware(compiler));
 }
 
-// Hacemos una peticion get en la que se incluyen todas la rutas.
-// ya sea '/' o '/otra-ruta'
-app.get("*", (req, res) => {
-  // Para servir el frontend desde el servidor necesitamos que este lo de 
-  // como respuesta en una peticion GET.
-  // Respondemos con el html que usamos como template para el frontdend.
-  // De esta manera podemos enlazar el css y el js que genera el webpack
-  // para el frontend y que la app se lanse desde el servidor.
-  res.send(`
+// Con esta funcion incrustamos el html renderizado de react como un string y lo incrustamos en
+// el template del html que se mostrara al final en el navegador.
+const setResponse = (html) => (`
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -54,12 +60,39 @@ app.get("*", (req, res) => {
       <title>P Video</title>
     </head>
     <body>
-      <div id="app"></div>
+      <div id="app">${html}</div>
       <script src="assets/app.js" type="text/javascript"></script>
     </body>
   </html>
-  `);
-});
+`);
+
+// Con esta funcion convertimos todos los componentes de react en el frontend como un string
+// De esta manera los podemos pasar a un html y enviarlo como un string por una peticion GET
+const renderApp = (req, res) =>{
+  // Necesitamos el store ya que es necesario tener el estado inicial y todo lo demas
+  // pero no vamos a usar react-devtool del lado del servidor asi que solo pasamos los 2 promeros argumentos.
+  // Esto es porque nocesitamos que el html quede igual como quedaria con el frontend normal.
+  const store = createStore(reducer, initialState);
+  // Renderizamos el html que vamos a usar.
+  // Provider para el store, staticRouter para el manejo de las rutas y renderRoutes para que renderice
+  // el objeto de rutas del servidor para que sepa cuales y como usarlas.
+  const html = renderToString(
+    <Provider store={store}>
+      <StaticRouter location={req.url} context={{}}>
+        {renderRoutes(serverRoutes)}
+      </StaticRouter>
+    </Provider>,
+  );
+  
+  // Enviamos el html al navegador.
+  res.send(setResponse(html));
+};
+
+// Hacemos una peticion get en la que se incluyen todas la rutas.
+// ya sea '/' o '/otra-ruta'.
+// Cambiamos el GET. Ya que tenemos una funcion que envia la respuesta al navegador
+// Solo necesitamos poner esa funcion como parametro.
+app.get("*", renderApp);
 
 // Lansamos la app de expres en el puerto que defnimos en
 // la variable de entorno.
@@ -67,5 +100,5 @@ app.listen(port, (err) => {
   // Validamos el error y si es asi lo mostramos o mostramos
   // en puerto en el que se lanzo el servidor.
   if (err) console.log(err);
-  else console.log("Server running on port 3000");
+  else console.log("Server running on port", port);
 });
