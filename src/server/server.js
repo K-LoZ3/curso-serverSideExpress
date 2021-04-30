@@ -52,7 +52,25 @@ if (env === "development") {
   // Ya que es esta en donde se gurdara todo el bundle.
   app.use(express.static(`${__dirname}/public`));
   // Ya con esto usamos todos los middleware/configuraciones que helmet nos da.
+  // Podemos usar esto para que no se preocupe por cosas como el origen del contenido.
+  // Imagenes, videos y demas.
+  /* app.use(helmet({
+    contentSecurityPolicy: false,
+  })); */
+  // O esta otra forma para decirle de donde vienen estos contenidos.
   app.use(helmet());
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        'default-src': ["'self'"],
+        'script-src': ["'self'", "'sha256-SkBCYLbasfzWEqcW9ooG30gwjXYMmP1cJyBG7Uom9WA='"],// No se a que se refiere esta.
+        'img-src': ["'self'", 'http://dummyimage.com'],
+        'style-src-elem': ["'self'", 'https://fonts.googleapis.com'],
+        'font-src': ['https://fonts.gstatic.com'],
+        'media-src': ['*'],
+      },
+    }),
+  );
   // Esta es importante porque desabilitamos la cabecera que tiene la informacion del servidor del que
   // Nos estamos conectando, asi ocultamos esta informacion en produccion y evitamos ataques dirigidos.
   app.disable('x-powered-by');

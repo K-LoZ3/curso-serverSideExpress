@@ -43,3 +43,45 @@ Con hydrate en vez de render lo que hacemos es que no renderice 2 veces, ya que 
 Creamos una carpeta public en la carpeta server, ya que es esta se incluira todo el bundle de la aplicacion.
 - Instalamos helmet ya que este sirve para la seguridad de la app ~~~npm i helmet~~~.
 - Agregamos la nueva carpeta public al .gitignore para que no se suban los assets ni bundles que generamos.
+#### Configuramos webpack para produccion
+- Cambiamos el script build del package.json para produccion. Lo que hacemos es pasarle el mismo archivo de configuracion que estamos usando.
+   ~~~json
+   "build": "webpack-cli --config webpack.config.js",
+   ~~~
+- Eliminamos el script start ya que al servir nuestra app de frontend desde el servidor ya no nesesitamos esto.
+- Configuramos webpack con ayuda de dotenv. Esto lo hacemos importando dotenv y ejecutando su funcion config dentro del archivo webpack.config.js.
+   ~~~js
+   require('dotenv').config();
+   ~~~
+- Cambiamos la ruta del output ya que queremos que el bundle quede en la carpeta public que esta en server.
+   ~~~js
+   ouput: {
+      path: path.resolve(__dirname, 'src/server/public'),
+      // ...
+   }
+   ~~~
+- Cambiamos el modo para que este este ligado a la variable de entorno.
+   ~~~js
+   mode: process.env.ENV,
+   ~~~
+- Declaramos una constante isDev para que valide si estamos en modo desarrollo para tomar desiciones a lo largo del archivo.
+   ~~~js
+   const isDev = (process.env.ENV === 'development');
+   ~~~
+- Con lo anterior nos ayudamos para no cargar el webpack-hot-middleware ya que no lo necesitamos en produccion. Asi que verificamos si eestamos en desarrollo y si es asi hacemos push al entry del webpack-hot-middleware.
+   ~~~js
+   const entry = ['./src/frontend/index.js'];
+   if(isDev) {
+      entry.push('webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000&reload=true');
+   }
+   
+   module.exports = {
+      entry, // Equivalente a entry: entry,
+      mode: process.env.ENV
+   }
+   ~~~
+- Validamos tambien si ejecutamos el plugin del hotModuleReplecement ya que tampoco es necesario para produccion.
+   ~~~js
+   isDev ? webpack.HotModuleReplacementPlugin() : () => {},
+   ~~~
+- Cambiamos en el .env la variable ENV para verificar si al poner produccion este toma las nuevas configuraciones.
