@@ -5,6 +5,8 @@ import express from "express";
 import config from "./config";
 // Importamos webpack para configurar los 2 middleware de webpack.
 import webpack from 'webpack';
+// Importamos para usar los middleware de seguridad que tiene.
+import helmet from 'helmet';
 
 import React from 'react'; // Importamos para poder usar jsx.
 import { renderToString } from 'react-dom/server'; // Importamos para tranzformar jsx a string y poder insertarlo en template de html.
@@ -45,10 +47,21 @@ if (env === "development") {
   // El segundo es para el hotModeReplacemen (El compilado automatico con los cambios).
   app.use(webpackDevWiddleware(compiler, serverConfig));
   app.use(webpackHotMiddleware(compiler));
+} else { // Modo de produccion
+  // Para que en produccion use esta carpeta publica.
+  // Ya que es esta en donde se gurdara todo el bundle.
+  app.use(express.static(`${__dirname}/public`));
+  // Ya con esto usamos todos los middleware/configuraciones que helmet nos da.
+  app.use(helmet());
+  // Esta es importante porque desabilitamos la cabecera que tiene la informacion del servidor del que
+  // Nos estamos conectando, asi ocultamos esta informacion en produccion y evitamos ataques dirigidos.
+  app.disable('x-powered-by');
 }
 
 // Con esta funcion incrustamos el html renderizado de react como un string y lo incrustamos en
 // el template del html que se mostrara al final en el navegador.
+// Este script se seguira viendo en el source del html del navegador.
+// Si quieres eliminar el script puedes asignarle un id y en lo que se monte el cliente eliminas del DOM el script.
 const setResponse = (html, preloadedState) => (`
   <!DOCTYPE html>
   <html lang="en">

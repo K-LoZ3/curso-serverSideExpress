@@ -39,3 +39,7 @@ El primero es para tener un historial de las rutas y el segundo es para añadir 
 Intalamos ~~~npm install asset-require-hook~~~
 #### Hydrate
 Con hydrate en vez de render lo que hacemos es que no renderice 2 veces, ya que la app la estamos renderizando en el servidor y estamos creando el store y el html en el servidor. Esto para mandar el html y el css al cliente antes de que frontend este listo. En este sentido lo que hacemos es cargar todo lo necesario en el servidor y mandarlo al navegador cuando el cliente ya tenga lo demas no necesitara re-renderizar solo tendra que hacer un hydrate para que agregue lo que falta, como lo es el js.
+#### Configurando el servidor para produccion.
+Creamos una carpeta public en la carpeta server, ya que es esta se incluira todo el bundle de la aplicacion.
+- Instalamos helmet ya que este sirve para la seguridad de la app ~~~npm i helmet~~~.
+- Agregamos la nueva carpeta public al .gitignore para que no se suban los assets ni bundles que generamos.
