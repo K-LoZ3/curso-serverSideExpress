@@ -19,6 +19,7 @@ import { StaticRouter } from 'react-router-dom';
 import serverRoutes from '../frontend/routes/serverRoutes'; // Importamos las rutas para renderizarlas del lado del servidor.
 import reducer from '../frontend/reducers'; // Importamos para crear bien el store.
 import initialState from '../frontend/initialState'; // Importamos para crear bien el store.
+import getManifest from './getManifest';
 
 // Extraemos solo las variables de entorno que vamos a usar.
 const { env, port } = config;
@@ -48,6 +49,13 @@ if (env === "development") {
   app.use(webpackDevWiddleware(compiler, serverConfig));
   app.use(webpackHotMiddleware(compiler));
 } else { // Modo de produccion
+  // Creamos un middleware que leera el manifest.json
+  app.use((req, res, next) => {
+    // Creamos esta variable con el manifest.json pero solo si no lo hemos hecho antes.
+    if (!req.hashManifest) req.hashManifest = getManifest();
+    // Pasamos al siguiente middleware.
+    next();
+  })
   // Para que en produccion use esta carpeta publica.
   // Ya que es esta en donde se gurdara todo el bundle.
   app.use(express.static(`${__dirname}/public`));
@@ -63,7 +71,7 @@ if (env === "development") {
     helmet.contentSecurityPolicy({
       directives: {
         'default-src': ["'self'"],
-        'script-src': ["'self'", "'sha256-SkBCYLbasfzWEqcW9ooG30gwjXYMmP1cJyBG7Uom9WA='"],// No se a que se refiere esta.
+        'script-src': ["'self'", "'sha256-Ti4FnS55L6EFT/nMP6BPeiOTZ7S0zoQ3/npnTXsjH9M='"],// No se a que se refiere esta.
         'img-src': ["'self'", 'http://dummyimage.com'],
         'style-src-elem': ["'self'", 'https://fonts.googleapis.com'],
         'font-src': ['https://fonts.gstatic.com'],
@@ -80,25 +88,32 @@ if (env === "development") {
 // el template del html que se mostrara al final en el navegador.
 // Este script se seguira viendo en el source del html del navegador.
 // Si quieres eliminar el script puedes asignarle un id y en lo que se monte el cliente eliminas del DOM el script.
-const setResponse = (html, preloadedState) => (`
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="assets/app.css" type="text/css">
-      <title>P Video</title>
-    </head>
-    <body>
-      <div id="app">${html}</div>
-      <script>
-        window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}
-      </script>
-      <script src="assets/app.js" type="text/javascript"></script>
-    </body>
-  </html>
-`);
+const setResponse = (html, preloadedState, manifest) => {
+  // Usamos manifest para obtener el nombre del archivo con los hashes generados para ponerlos en el html tal cual.
+  // Con esta validacion lo que hacemos es verificar primero si fue leido el archivo. de lo contrario usa el archivo anterior.
+  const mainStyles = manifest ? manifest['main.css'] : 'assets/app.css';
+  const mainBuild = manifest ? manifest['main.js'] : 'assets/app.js';
+
+  return (`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="${mainStyles}" type="text/css">
+        <title>P Video</title>
+      </head>
+      <body>
+        <div id="app">${html}</div>
+        <script>
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}
+        </script>
+        <script src="${mainBuild}" type="text/javascript"></script>
+      </body>
+    </html>
+  `);
+}
 // El script es para poder pasar el preloadState para que el frontend pueda acceder y usarlo.
 
 // Con esta funcion convertimos todos los componentes de react en el frontend como un string
@@ -123,7 +138,10 @@ const renderApp = (req, res) =>{
   );
   
   // Enviamos el html al navegador. Tambien enviamos el precargado del store.
-  res.send(setResponse(html, preloadedState));
+  // Pasamos el hashMinifest desde el req ya que con el middleware anterior creamos esa variable.
+  // Como ahora la podemos usar la pasamos para usarla en el html para decirle como se llaman los
+  // archivos ahora que tienen hashes.
+  res.send(setResponse(html, preloadedState, req.hashManifest));
 };
 
 // Hacemos una peticion get en la que se incluyen todas la rutas.

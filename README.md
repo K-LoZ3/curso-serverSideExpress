@@ -97,3 +97,9 @@ Lo usamos en webpack.config y lo que hacemos es en la parte de optimizacion agre
       minimizer: [new TerserPlugin()],
    },
    ~~~
+#### Aplicar hashes al nombre de nuestros builds
+para esto modificamos el filename del output si estamos en modo produccion y lo mismo para el outpue de css. Agregamos un hash si es produccion.
+- Instalamos webpack-manifest-plugin.
+~~~npm i webpack-manifest-plugin~~~ para crear un manifiesto de los archivos que se generan en la carpeta public. Esto solo lo usaremos para produccion, asi que lo importamos en webpack.config y validando si es produccion lo usamos en la parte de plugins.
+Esto crea un archivo manifest.json en la carpeta public.
+Para usarlo y leerlo creamos un funcion en un archivo server/getManifest.js que se encargara de leerlo y usarlo.
