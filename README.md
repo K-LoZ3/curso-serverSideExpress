@@ -85,3 +85,15 @@ Creamos una carpeta public en la carpeta server, ya que es esta se incluira todo
    isDev ? webpack.HotModuleReplacementPlugin() : () => {},
    ~~~
 - Cambiamos en el .env la variable ENV para verificar si al poner produccion este toma las nuevas configuraciones.
+#### Optimización del Build
+Primero verificamos que no se esten llamanto loaders de mas. Como el de htlm que borraremos.
+- Instalamos compression-webpack-pluging para comprimir todo el bundle. Lo usamos el webpack.config pero solo si estamos en produccion. Le indicamos que archivos va a comprimir y cual sera el nombre del archivo resultante.
+- Instalamos tercer para minificar el js.
+~~~npm i terser-webpack-plugin -D~~~
+Lo usamos en webpack.config y lo que hacemos es en la parte de optimizacion agregamos la configuracion necesaria.
+   ~~~js
+   optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+   },
+   ~~~
