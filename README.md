@@ -105,3 +105,9 @@ Esto crea un archivo manifest.json en la carpeta public.
 Para usarlo y leerlo creamos un funcion en un archivo server/getManifest.js que se encargara de leerlo y usarlo.
 #### Vendorfile con webpack
 Con vendor lo que hacemos es separar la logica del programa de los archivos que estamos importando. De esta manera quedan estos en un archivo unico.
+#### Implementando ESlint en el proyecto
+Para esto instalamos eslint y eslint-webpack-plugin como dependecias de desarrollo. Esto para verificar si hay errores y corregirlos. En el package.json creamos un script para corregir los errores automaticamente.
+~~~json
+"lint": "eslint src/frontend/ --ext .js --ext .jsx --fix"
+~~~
+Y en el webpack config importamos e implementamos el plugin para que se ejecute si estamos en modo desarrollo. o lo dejamos para que se ejecute en los 2 modos, depende de lo que queremos.

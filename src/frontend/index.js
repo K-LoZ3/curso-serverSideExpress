@@ -18,7 +18,6 @@ delete window.__PRELOADED_STATE__;
 // puede acceder a esta variable window.__PRELOADED_STATE__ y ver todo el stado de la app.
 // Debemos borrarla despues de usarla para que esto no sea un problema.
 
-
 // Cambiamos render por hydrate ya que no queremos que se renderice el react otra vez.
 // Para resumir toda la configuracion en README.md
 ReactDOM.hydrate(
@@ -27,5 +26,5 @@ ReactDOM.hydrate(
       <App />
     </Router>
   </Provider>,
-  document.getElementById('app')
+  document.getElementById('app'),
 );

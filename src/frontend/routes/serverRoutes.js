@@ -1,4 +1,4 @@
-// Importamos todos los containers para crear la misma estructura de 
+// Importamos todos los containers para crear la misma estructura de
 // Rutas del lado del servidor.
 import Home from '../containers/Home';
 import Login from '../containers/Login';
