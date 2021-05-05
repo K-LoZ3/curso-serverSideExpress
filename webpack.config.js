@@ -18,7 +18,7 @@ module.exports = {
    mode: process.env.ENV,
    output: {
       path: path.resolve(__dirname, 'src/server/public'),
-      filename: isDev ? 'assets/app.js' : 'assets/app-[hash].js',
+      filename: isDev ? 'assets/app.js' : 'assets/app-[contenthash].js',
       publicPath: '/',
    },
    resolve: {
@@ -27,6 +27,24 @@ module.exports = {
    optimization: {
       minimize: true,
       minimizer: [new TerserPlugin()],
+      splitChunks: {
+         chunks: 'async',
+         name: 'true',
+         cacheGroups: {
+            vendors: {
+               name: 'vendors',
+               chunks: 'all',
+               reuseExistingChunk: true,
+               priority: 1,
+               filename: isDev ? 'assets/vendor.js' : 'assets/vendor-[contenthash].js',
+               enforce: true,
+               test(module, chunks) {
+                  const name = module.nameForCondition && module.nameForCondition();
+                  return chunks.name !== 'vendors' && /[\\/]node_modules[\\/]/.test(name);
+               }
+            },
+         },
+      },
    },
    module: {
       rules: [
@@ -52,7 +70,7 @@ module.exports = {
             use: [
                {
                loader: 'file-loader',
-               options: { name: 'assets/[hash].[ext]' },
+               options: { name: 'assets/[contenthash].[ext]' },
                }
             ],
          },
@@ -69,7 +87,7 @@ module.exports = {
       }),
       isDev ? () => {} : new WebpackManifestPlugin(),
       new MiniCssExtractPlugin({
-         filename: isDev ? 'assets/app.css' : 'assets/app-[hash].css',
+         filename: isDev ? 'assets/app.css' : 'assets/app-[contenthash].css',
       }),
    ]
 }

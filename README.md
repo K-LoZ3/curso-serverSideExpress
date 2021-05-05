@@ -103,3 +103,5 @@ para esto modificamos el filename del output si estamos en modo produccion y lo 
 ~~~npm i webpack-manifest-plugin~~~ para crear un manifiesto de los archivos que se generan en la carpeta public. Esto solo lo usaremos para produccion, asi que lo importamos en webpack.config y validando si es produccion lo usamos en la parte de plugins.
 Esto crea un archivo manifest.json en la carpeta public.
 Para usarlo y leerlo creamos un funcion en un archivo server/getManifest.js que se encargara de leerlo y usarlo.
+#### Vendorfile con webpack
+Esto es para que todo este en un unico archivo. Toda la logica que estamos programando quedara en un unico archivo que se cargara de una manera diferente. Toda esta configuracion se hace en el apartado de optimization en webpack.config en la parte de splitShunks.
