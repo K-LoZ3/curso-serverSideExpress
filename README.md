@@ -104,4 +104,4 @@ para esto modificamos el filename del output si estamos en modo produccion y lo 
 Esto crea un archivo manifest.json en la carpeta public.
 Para usarlo y leerlo creamos un funcion en un archivo server/getManifest.js que se encargara de leerlo y usarlo.
 #### Vendorfile con webpack
-Esto es para que todo este en un unico archivo. Toda la logica que estamos programando quedara en un unico archivo que se cargara de una manera diferente. Toda esta configuracion se hace en el apartado de optimization en webpack.config en la parte de splitShunks.
+Con vendor lo que hacemos es separar la logica del programa de los archivos que estamos importando. De esta manera quedan estos en un archivo unico.
