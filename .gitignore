@@ -77,3 +77,6 @@ dist/
 
 # public
 src/server/public
+
+# next
+.next
